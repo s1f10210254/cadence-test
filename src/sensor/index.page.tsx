@@ -1,12 +1,8 @@
-import { atom, useAtom } from 'jotai';
 import React, { useState } from 'react';
-export const currentRPMAtom = atom(0);
-
 const SensorPage: React.FC = () => {
   const cadenceValue: number[] = [];
   const timestamps: number[] = [];
-  const [currentRPM, SetcurrentRPM] = useAtom(currentRPMAtom);
-  // const jotai = atom(0);
+  const [currentRPM, SetcurrentRPM] = useState(0);
   const [batteryPercent, setBatteryPercent] = useState<number | null>(null);
 
   //データのアップデート関数
@@ -51,10 +47,8 @@ const SensorPage: React.FC = () => {
     }
 
     const currentRpm = calculateRPM();
+    SetcurrentRPM(calculateRPM);
     console.log('Current RPM:', currentRpm);
-    const RPM = Math.floor(currentRpm / 100);
-    console.log('最終的な値 RPM:', RPM);
-    SetcurrentRPM(RPM);
   };
 
   async function connectToSensor() {
