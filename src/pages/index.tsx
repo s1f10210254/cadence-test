@@ -9,15 +9,28 @@ const SensorPage: React.FC = () => {
   // const jotai = atom(0);
   const [batteryPercent, setBatteryPercent] = useState<number | null>(null);
 
+  let lastPositiveRPMUpdate = Date.now();
+
   //データのアップデート関数
   //センサからの新しい値を受け取り、その値のタイムスタンプを取得、１０秒以上のデータ削除
   function updateData(value: number) {
     const now = Date.now();
 
+    if (value > 0) {
+      lastPositiveRPMUpdate = now;
+    }
+
+    //15秒以上RPMが０以上で更新されていない場合、配列を空にする
+    if (now - lastPositiveRPMUpdate >= 15000) {
+      cadenceValue.length = 0;
+      timestamps.length = 0;
+      return;
+    }
+
     cadenceValue.push(value);
     timestamps.push(now);
 
-    while (timestamps[0] < now - 10000) {
+    while (timestamps[0] < now - 2000) {
       timestamps.shift();
       cadenceValue.shift();
     }
@@ -28,9 +41,12 @@ const SensorPage: React.FC = () => {
   //初期値からの差を計算する
   function calculateRPM() {
     // const uniqueValue = [...new Set(cadenceValue)];
+    //重複する値を削除
     const uniqueValue = Array.from(new Set(cadenceValue));
+    //初期値を入れる
     const initialValue = uniqueValue[0];
 
+    //
     const rotations = uniqueValue.map((value) => value - initialValue);
     const totalRotations = rotations.reduce((acc, cur) => acc + cur, 0);
 
@@ -52,7 +68,7 @@ const SensorPage: React.FC = () => {
 
     const currentRpm = calculateRPM();
     console.log('Current RPM:', currentRpm);
-    const RPM = Math.floor(currentRpm / 100);
+    const RPM = Math.floor(currentRpm);
     console.log('最終的な値 RPM:', RPM);
     SetcurrentRPM(RPM);
   };
@@ -90,7 +106,7 @@ const SensorPage: React.FC = () => {
 
       // HTMLにバッテリーレベルを表示
       const batteryDisplay = document.getElementById('batteryLevel');
-      if (batteryDisplay) {
+      if (batteryDisplay !== null) {
         batteryDisplay.textContent = `バッテリー残量: ${batteryPercent}%`;
       }
 
