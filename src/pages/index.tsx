@@ -73,83 +73,34 @@ const SensorPage: React.FC = () => {
   //   SetcurrentRPM(RPM);
   // };
 
-  // let initialValue: number | null = null;
-  // let previousValue: number | null = null;
-
-  // const handleCadenceMeasurement = (event: Event) => {
-  //   const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
-  //   const rpmValue = value?.getUint16(1, true);
-
-  //   if (value === null || value === undefined) {
-  //     console.error('No value received from characteristic');
-  //     return;
-  //   }
-
-  //   if (typeof rpmValue !== 'undefined') {
-  //     if (initialValue === null) {
-  //       initialValue = rpmValue;
-  //       return;
-  //     }
-  //     const rpm = rpmValue - initialValue;
-
-  //     if (previousValue !== rpm) {
-  //       console.log('RPMの値:', rpmValue);
-  //       SetcurrentRPM(rpmValue);
-  //       previousValue = rpmValue;
-  //     }
-  //   }
-  // };
-
-  // ... [connectToSensor()関数は以前のものをそのまま使用]
-  let prevTime: number | null = null;
-  // const currentTIme: number | null = null;
-  let prevRPM: number | null = null;
-  let diffentTime = 0;
-
-  let timeoutId: NodeJS.Timeout | null = null;
-
-  const updateRpmValues = (rpmValue: number) => {
-    if (prevRPM === null) prevRPM = rpmValue;
-    if (prevTime === null) prevTime = Date.now();
-  };
-
-  const handleRpmIncrease = (rpmValue: number) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    const currentTIme = Date.now();
-    diffentTime = currentTIme - (prevTime !== null ? prevTime : currentTIme);
-
-    timeoutId = setTimeout(() => {
-      resetRpmValues();
-      console.log('No RPM change detected for 3 seconds! Setting diffentTime to 0.');
-    }, 8000);
-
-    prevTime = Date.now();
-    prevRPM = rpmValue;
-  };
-
-  const resetRpmValues = () => {
-    diffentTime = 0;
-    prevTime = null;
-    prevRPM = null;
-  };
+  let initialValue: number | null = null;
+  let previousValue: number | null = null;
 
   const handleCadenceMeasurement = (event: Event) => {
     const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
     const rpmValue = value?.getUint16(1, true);
-    console.log('handleCadenceMeasurementに入った!', rpmValue);
 
-    if (rpmValue === undefined) return;
-
-    updateRpmValues(rpmValue);
-
-    if (rpmValue >= (prevRPM !== null ? prevRPM : 0) + 1) {
-      handleRpmIncrease(rpmValue);
+    if (value === null || value === undefined) {
+      console.error('No value received from characteristic');
+      return;
     }
-    console.log('diffentTIme', diffentTime);
-    return diffentTime;
+
+    if (typeof rpmValue !== 'undefined') {
+      if (initialValue === null) {
+        initialValue = rpmValue;
+        return;
+      }
+      const rpm = rpmValue - initialValue;
+
+      if (previousValue !== rpm) {
+        console.log('RPMの値:', rpmValue);
+        SetcurrentRPM(rpmValue);
+        previousValue = rpmValue;
+      }
+    }
   };
+
+  // ... [connectToSensor()関数は以前のものをそのまま使用]
 
   async function connectToSensor() {
     try {
