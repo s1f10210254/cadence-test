@@ -3,74 +3,152 @@ import React, { useState } from 'react';
 export const currentRPMAtom = atom(0);
 
 const SensorPage: React.FC = () => {
-  const cadenceValue: number[] = [];
-  const timestamps: number[] = [];
+  // const cadenceValue: number[] = [];
+  // const timestamps: number[] = [];
   const [currentRPM, SetcurrentRPM] = useAtom(currentRPMAtom);
-  // const jotai = atom(0);
+  // // const jotai = atom(0);
   const [batteryPercent, setBatteryPercent] = useState<number | null>(null);
 
-  let lastPositiveRPMUpdate = Date.now();
+  // let lastPositiveRPMUpdate = Date.now();
 
-  //データのアップデート関数
-  //センサからの新しい値を受け取り、その値のタイムスタンプを取得、１０秒以上のデータ削除
-  function updateData(value: number) {
-    const now = Date.now();
+  // //データのアップデート関数
+  // //センサからの新しい値を受け取り、その値のタイムスタンプを取得、１０秒以上のデータ削除
+  // function updateData(value: number) {
+  //   const now = Date.now();
 
-    if (value > 0) {
-      lastPositiveRPMUpdate = now;
+  //   if (value > 0) {
+  //     lastPositiveRPMUpdate = now;
+  //   }
+
+  //   //15秒以上RPMが０以上で更新されていない場合、配列を空にする
+  //   if (now - lastPositiveRPMUpdate >= 15000) {
+  //     cadenceValue.length = 0;
+  //     timestamps.length = 0;
+  //     return;
+  //   }
+
+  //   cadenceValue.push(value);
+  //   timestamps.push(now);
+
+  //   while (timestamps[0] < now - 2000) {
+  //     timestamps.shift();
+  //     cadenceValue.shift();
+  //   }
+  // }
+
+  // //RPM計算関数
+  // //重複地を取り除く
+  // //初期値からの差を計算する
+  // function calculateRPM() {
+  //   // const uniqueValue = [...new Set(cadenceValue)];
+  //   //重複する値を削除
+  //   const uniqueValue = Array.from(new Set(cadenceValue));
+  //   //初期値を入れる
+  //   const initialValue = uniqueValue[0];
+
+  //   //
+  //   const rotations = uniqueValue.map((value) => value - initialValue);
+  //   const totalRotations = rotations.reduce((acc, cur) => acc + cur, 0);
+
+  //   const rpm = totalRotations / (timestamps.length / 1000); //RPM計算
+  //   return rpm;
+  // }
+
+  // const handleCadenceMeasurement = (event: Event) => {
+  //   const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
+  //   const rpmValue = value?.getUint16(1, true);
+
+  //   if (value === null || value === undefined) {
+  //     console.error('No value received from characteristic');
+  //     return;
+  //   }
+  //   if (typeof rpmValue !== 'undefined') {
+  //     updateData(rpmValue);
+  //   }
+
+  //   const currentRpm = calculateRPM();
+  //   console.log('Current RPM:', currentRpm);
+  //   const RPM = Math.floor(currentRpm);
+  //   console.log('最終的な値 RPM:', RPM);
+  //   SetcurrentRPM(RPM);
+  // };
+
+  // let initialValue: number | null = null;
+  // let previousValue: number | null = null;
+
+  // const handleCadenceMeasurement = (event: Event) => {
+  //   const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
+  //   const rpmValue = value?.getUint16(1, true);
+
+  //   if (value === null || value === undefined) {
+  //     console.error('No value received from characteristic');
+  //     return;
+  //   }
+
+  //   if (typeof rpmValue !== 'undefined') {
+  //     if (initialValue === null) {
+  //       initialValue = rpmValue;
+  //       return;
+  //     }
+  //     const rpm = rpmValue - initialValue;
+
+  //     if (previousValue !== rpm) {
+  //       console.log('RPMの値:', rpmValue);
+  //       SetcurrentRPM(rpmValue);
+  //       previousValue = rpmValue;
+  //     }
+  //   }
+  // };
+
+  // ... [connectToSensor()関数は以前のものをそのまま使用]
+  let prevTime: number | null = null;
+  // const currentTIme: number | null = null;
+  let prevRPM: number | null = null;
+  let diffentTime = 0;
+
+  let timeoutId: NodeJS.Timeout | null = null;
+
+  const updateRpmValues = (rpmValue: number) => {
+    if (prevRPM === null) prevRPM = rpmValue;
+    if (prevTime === null) prevTime = Date.now();
+  };
+
+  const handleRpmIncrease = (rpmValue: number) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
     }
+    const currentTIme = Date.now();
+    diffentTime = currentTIme - (prevTime !== null ? prevTime : currentTIme);
 
-    //15秒以上RPMが０以上で更新されていない場合、配列を空にする
-    if (now - lastPositiveRPMUpdate >= 15000) {
-      cadenceValue.length = 0;
-      timestamps.length = 0;
-      return;
-    }
+    timeoutId = setTimeout(() => {
+      resetRpmValues();
+      console.log('No RPM change detected for 3 seconds! Setting diffentTime to 0.');
+    }, 8000);
 
-    cadenceValue.push(value);
-    timestamps.push(now);
+    prevTime = Date.now();
+    prevRPM = rpmValue;
+  };
 
-    while (timestamps[0] < now - 2000) {
-      timestamps.shift();
-      cadenceValue.shift();
-    }
-  }
-
-  //RPM計算関数
-  //重複地を取り除く
-  //初期値からの差を計算する
-  function calculateRPM() {
-    // const uniqueValue = [...new Set(cadenceValue)];
-    //重複する値を削除
-    const uniqueValue = Array.from(new Set(cadenceValue));
-    //初期値を入れる
-    const initialValue = uniqueValue[0];
-
-    //
-    const rotations = uniqueValue.map((value) => value - initialValue);
-    const totalRotations = rotations.reduce((acc, cur) => acc + cur, 0);
-
-    const rpm = totalRotations / (timestamps.length / 1000); //RPM計算
-    return rpm;
-  }
+  const resetRpmValues = () => {
+    diffentTime = 0;
+    prevTime = null;
+    prevRPM = null;
+  };
 
   const handleCadenceMeasurement = (event: Event) => {
     const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
     const rpmValue = value?.getUint16(1, true);
+    console.log('handleCadenceMeasurementに入った!', rpmValue);
 
-    if (value === null || value === undefined) {
-      console.error('No value received from characteristic');
-      return;
-    }
-    if (typeof rpmValue !== 'undefined') {
-      updateData(rpmValue);
-    }
+    if (rpmValue === undefined) return;
 
-    const currentRpm = calculateRPM();
-    console.log('Current RPM:', currentRpm);
-    const RPM = Math.floor(currentRpm);
-    console.log('最終的な値 RPM:', RPM);
-    SetcurrentRPM(RPM);
+    updateRpmValues(rpmValue);
+
+    if (rpmValue >= (prevRPM !== null ? prevRPM : 0) + 1) {
+      handleRpmIncrease(rpmValue);
+    }
+    console.log('diffentTIme', diffentTime);
+    return diffentTime;
   };
 
   async function connectToSensor() {
@@ -152,6 +230,7 @@ const SensorPage: React.FC = () => {
       ) : (
         <span id="batteryLevel">バッテリー残量: ---%</span>
       )}
+
       <p>RPM:{currentRPM}</p>
     </div>
   );
