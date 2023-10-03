@@ -9,8 +9,8 @@ const SensorPage: React.FC = () => {
   // // const jotai = atom(0);
   const [batteryPercent, setBatteryPercent] = useState<number | null>(null);
 
-  let initialValue: number | null = null;
-  let previousValue: number | null = null;
+  // const initialValue: number | null = null;
+  // const previousValue: number | null = null;
 
   const handleCadenceMeasurement = (event: Event) => {
     const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
@@ -23,17 +23,18 @@ const SensorPage: React.FC = () => {
     console.log('rpmValue', rpmValue);
 
     if (rpmValue !== undefined) {
-      if (initialValue === null) {
-        initialValue = rpmValue;
-        return;
-      }
-      const rpm = rpmValue - initialValue;
+      // if (initialValue === null) {
+      //   initialValue = rpmValue;
+      //   return;
+      // }
+      // const rpm = rpmValue - initialValue;
 
-      if (previousValue !== rpm) {
-        console.log('RPMの値:', rpmValue);
-        SetcurrentRPM(rpmValue);
-        previousValue = rpmValue;
-      }
+      // if (previousValue !== rpm) {
+      //   console.log('RPMの値:', rpmValue);
+      //   SetcurrentRPM(rpmValue);
+      //   previousValue = rpmValue;
+      // }
+      SetcurrentRPM(rpmValue);
     }
   };
 
