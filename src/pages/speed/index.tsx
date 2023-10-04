@@ -153,43 +153,43 @@ const SensorPage: React.FC = () => {
     });
   }
 
-  // const [cyclingInfo, setCyclingInfo] = useState({
-  //   scControlPoint: '',
-  //   cscMeasurement: '',
-  //   cscFeature: '',
-  //   sensorLocation: '',
-  // });
+  const [cyclingInfo, setCyclingInfo] = useState({
+    scControlPoint: '',
+    cscMeasurement: '',
+    cscFeature: '',
+    sensorLocation: '',
+  });
 
-  // async function fetchCyclingInfo(server: BluetoothRemoteGATTServer) {
-  //   const cscService = await server.getPrimaryService('00001816-0000-1000-8000-00805f9b34fb');
+  async function fetchCyclingInfo(server: BluetoothRemoteGATTServer) {
+    const cscService = await server.getPrimaryService('00001816-0000-1000-8000-00805f9b34fb');
 
-  //   // 各キャラクタリスティックを取得
-  //   const scControlPointCharacteristic = await cscService.getCharacteristic(
-  //     '00002a55-0000-1000-8000-00805f9b34fb'
-  //   );
-  //   const cscMeasurementCharacteristic = await cscService.getCharacteristic(
-  //     '00002a5b-0000-1000-8000-00805f9b34fb'
-  //   );
-  //   const cscFeatureCharacteristic = await cscService.getCharacteristic(
-  //     '00002a5c-0000-1000-8000-00805f9b34fb'
-  //   );
-  //   const sensorLocationCharacteristic = await cscService.getCharacteristic(
-  //     '00002a5d-0000-1000-8000-00805f9b34fb'
-  //   );
+    // 各キャラクタリスティックを取得
+    const scControlPointCharacteristic = await cscService.getCharacteristic(
+      '00002a55-0000-1000-8000-00805f9b34fb'
+    );
+    const cscMeasurementCharacteristic = await cscService.getCharacteristic(
+      '00002a5b-0000-1000-8000-00805f9b34fb'
+    );
+    const cscFeatureCharacteristic = await cscService.getCharacteristic(
+      '00002a5c-0000-1000-8000-00805f9b34fb'
+    );
+    const sensorLocationCharacteristic = await cscService.getCharacteristic(
+      '00002a5d-0000-1000-8000-00805f9b34fb'
+    );
 
-  //   // 値を読み取る
-  //   const scControlPoint = new TextDecoder().decode(await scControlPointCharacteristic.readValue());
-  //   const cscMeasurement = new TextDecoder().decode(await cscMeasurementCharacteristic.readValue());
-  //   const cscFeature = new TextDecoder().decode(await cscFeatureCharacteristic.readValue());
-  //   const sensorLocation = new TextDecoder().decode(await sensorLocationCharacteristic.readValue());
+    // 値を読み取る
+    const scControlPoint = new TextDecoder().decode(await scControlPointCharacteristic.readValue());
+    const cscMeasurement = new TextDecoder().decode(await cscMeasurementCharacteristic.readValue());
+    const cscFeature = new TextDecoder().decode(await cscFeatureCharacteristic.readValue());
+    const sensorLocation = new TextDecoder().decode(await sensorLocationCharacteristic.readValue());
 
-  //   setCyclingInfo({
-  //     scControlPoint,
-  //     cscMeasurement,
-  //     cscFeature,
-  //     sensorLocation,
-  //   });
-  // }
+    setCyclingInfo({
+      scControlPoint,
+      cscMeasurement,
+      cscFeature,
+      sensorLocation,
+    });
+  }
 
   async function connectToSensor() {
     try {
@@ -215,7 +215,7 @@ const SensorPage: React.FC = () => {
       //
       await fetchGenericAttributes(server);
       await fetchGenericAccess(server);
-      // await fetchCyclingInfo(server);
+      await fetchCyclingInfo(server);
 
       //サービスの取得（ケイデンスセンサーのサービスを取得）
       const service = await server.getPrimaryService('00001816-0000-1000-8000-00805f9b34fb');
@@ -309,13 +309,13 @@ const SensorPage: React.FC = () => {
         <h3>Generic Attribute 情報</h3>
         <p>サービスUUID: {genericAttributes}</p>
       </div>
-      {/* <div>
+      <div>
         <h3>サイクリング情報</h3>
         <p>SC Control Point: {cyclingInfo.scControlPoint}</p>
         <p>CSC Measurement: {cyclingInfo.cscMeasurement}</p>
         <p>CSC Feature: {cyclingInfo.cscFeature}</p>
         <p>Sensor Location: {cyclingInfo.sensorLocation}</p>
-      </div> */}
+      </div>
     </div>
   );
 };
