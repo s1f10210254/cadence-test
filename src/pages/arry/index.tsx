@@ -1,6 +1,20 @@
 import { atom, useAtom } from 'jotai';
 import React, { useState } from 'react';
 export const currentRPMAtom = atom(0);
+export const ArryRPMAtom = atom([]);
+
+// const processCadence = (event: Event) => {
+//   const [ArryRPM, setArryRPM] = useAtom(ArryRPMAtom);
+
+//   const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
+//   const rpmValue = value?.getUint16(1, true);
+//   if (rpmValue === undefined) return;
+
+//   const arry = [];
+//   arry.push(rpmValue);
+//   if (arry.length > 20) arry.shift();
+
+// };
 
 const SensorPage: React.FC = () => {
   // const cadenceValue: number[] = [];
