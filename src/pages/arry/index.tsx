@@ -4,21 +4,21 @@ export const currentRPMAtom = atom(0);
 export const ArryRPMAtom = atom<number[]>([]);
 
 const SensorPage: React.FC = () => {
-  // const cadenceValue: number[] = [];
-  // const timestamps: number[] = [];
-  // const [currentRPM, SetcurrentRPM] = useAtom(currentRPMAtom);
-  // // const jotai = atom(0);
   const [batteryPercent, setBatteryPercent] = useState<number | null>(null);
   const [ArryRPM, setArryRPM] = useAtom(ArryRPMAtom);
-  // const initialValue: number | null = null;
-  // const previousValue: number | null = null;
   const processCadence = (event: Event) => {
+    let inisial = null;
     const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
     const rpmValue = value?.getUint16(1, true);
     if (rpmValue === undefined) return;
+    if (inisial === null) {
+      inisial = rpmValue;
+      return;
+    }
+    const rpm = rpmValue - inisial;
 
     const arry = [];
-    arry.push(rpmValue);
+    arry.push(rpm);
     if (arry.length > 20) arry.shift();
     setArryRPM(arry);
     return ArryRPM;
