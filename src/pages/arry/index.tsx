@@ -29,6 +29,8 @@ const SensorPage: React.FC = () => {
     setArryRPM(Arry);
   };
 
+  const latestRPM = ArryRPM[ArryRPM.length - 1];
+
   async function connectToSensor() {
     try {
       //blutoothデバイスの要求
@@ -109,7 +111,7 @@ const SensorPage: React.FC = () => {
         <span id="batteryLevel">バッテリー残量: ---%</span>
       )}
 
-      <p>RPM:{ArryRPM}</p>
+      <p>回転数:{latestRPM}</p>
     </div>
   );
 };
