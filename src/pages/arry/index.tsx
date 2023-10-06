@@ -1,55 +1,32 @@
 import { atom, useAtom } from 'jotai';
 import React, { useState } from 'react';
 export const currentRPMAtom = atom(0);
-export const ArryRPMAtom = atom([]);
-
-// const processCadence = (event: Event) => {
-//   const [ArryRPM, setArryRPM] = useAtom(ArryRPMAtom);
-
-//   const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
-//   const rpmValue = value?.getUint16(1, true);
-//   if (rpmValue === undefined) return;
-
-//   const arry = [];
-//   arry.push(rpmValue);
-//   if (arry.length > 20) arry.shift();
-
-// };
+export const ArryRPMAtom = atom<number[]>([]);
 
 const SensorPage: React.FC = () => {
   // const cadenceValue: number[] = [];
   // const timestamps: number[] = [];
-  const [currentRPM, SetcurrentRPM] = useAtom(currentRPMAtom);
+  // const [currentRPM, SetcurrentRPM] = useAtom(currentRPMAtom);
   // // const jotai = atom(0);
   const [batteryPercent, setBatteryPercent] = useState<number | null>(null);
-
+  const [ArryRPM, setArryRPM] = useAtom(ArryRPMAtom);
   // const initialValue: number | null = null;
   // const previousValue: number | null = null;
-
-  const handleCadenceMeasurement = (event: Event) => {
+  const processCadence = (event: Event) => {
     const value = (event.target as unknown as BluetoothRemoteGATTCharacteristic).value;
     const rpmValue = value?.getUint16(1, true);
+    if (rpmValue === undefined) return;
 
-    if (value === null || value === undefined) {
-      console.error('No value received from characteristic');
-      return;
-    }
-    console.log('rpmValue', rpmValue);
-
-    if (rpmValue !== undefined) {
-      // if (initialValue === null) {
-      //   initialValue = rpmValue;
-      //   return;
-      // }
-      // const rpm = rpmValue - initialValue;
-
-      // if (previousValue !== rpm) {
-      //   console.log('RPMの値:', rpmValue);
-      //   SetcurrentRPM(rpmValue);
-      //   previousValue = rpmValue;
-      // }
-      SetcurrentRPM(rpmValue);
-    }
+    const arry = [];
+    arry.push(rpmValue);
+    if (arry.length > 20) arry.shift();
+    setArryRPM(arry);
+    return ArryRPM;
+  };
+  const handleCadenceMeasurement = (event: Event) => {
+    const Arry = processCadence(event);
+    if (Arry === undefined) return;
+    setArryRPM(Arry);
   };
 
   async function connectToSensor() {
@@ -132,7 +109,7 @@ const SensorPage: React.FC = () => {
         <span id="batteryLevel">バッテリー残量: ---%</span>
       )}
 
-      <p>RPM:{currentRPM}</p>
+      <p>RPM:{ArryRPM}</p>
     </div>
   );
 };
