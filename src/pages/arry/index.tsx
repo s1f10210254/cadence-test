@@ -31,6 +31,19 @@ const SensorPage: React.FC = () => {
 
   const latestRPM = ArryRPM[ArryRPM.length - 1];
 
+  const videoSpeed = () => {
+    let count = 0;
+    let previos = 0;
+    const a = [...ArryRPM];
+    for (let i = 0; i <= a.length; i++) {
+      if (i === previos) {
+        count += 1;
+        previos = i;
+      }
+    }
+    return count;
+  };
+
   async function connectToSensor() {
     try {
       //blutoothデバイスの要求
@@ -112,6 +125,7 @@ const SensorPage: React.FC = () => {
       )}
 
       <p>回転数:{latestRPM}</p>
+      <p>video:{videoSpeed()}</p>
     </div>
   );
 };
