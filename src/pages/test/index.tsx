@@ -1,7 +1,7 @@
 import React from 'react';
-import '../styles/design.module.css';
+import './index.module.css';
 
-const Design: React.FC = () => {
+const App: React.FC = () => {
   return (
     <div className="container">
       <div className="leftBox">
@@ -18,4 +18,4 @@ const Design: React.FC = () => {
   );
 };
 
-export default Design;
+export default App;
